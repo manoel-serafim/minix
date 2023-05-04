@@ -29,7 +29,11 @@ EXTERN struct schedproc {
 	unsigned max_priority;	/* this process' highest allowed priority */
 	unsigned priority;		/* the process' current priority */
 	unsigned time_slice;		/* this process's time slice */
-	unsigned cpu;		/* what CPU is the process running on */
+	unsigned cpu;	/* what CPU is the process running on */
+	
+	unsigned cexec;  /*coefficient of execution */ 
+	unsigned run_count; /*number of times runned*/
+	
 	bitchunk_t cpu_mask[BITMAP_CHUNKS(CONFIG_MAX_CPUS)]; /* what CPUs is the
 								process allowed
 								to run on */
