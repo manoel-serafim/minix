@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <minix/com.h>
 #include <machine/archtypes.h>
+#include "kernel/proc.h" /* for queue constants */
 
 static unsigned balance_timeout;
 
@@ -78,6 +79,19 @@ static void pick_cpu(struct schedproc * proc)
 #else
 	proc->cpu = 0;
 #endif
+}
+/*===========================================================================*
+ *		  		coeficient_updater			     *
+ *===========================================================================*/
+int updater()
+{
+	struct schedproc *rmp;
+	
+	
+
+
+
+
 }
 
 /*===========================================================================*
