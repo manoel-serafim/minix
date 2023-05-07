@@ -101,7 +101,7 @@ int updater()
 	
 	//iterate to get values
 	for (pnr = 0, rmp = schedproc; pnr < NR_PROCS; pnr++, rmp++) { //in array of system processes
-		if ((rmp->flags & IN_USE && rmp->is_sys_proc != 1) && rmp->priority >= MIN_PRIORITY && rmp->priority <= MAX_PRIORITY) { //if in userspace
+		if ((rmp->flags & IN_USE && is_system_proc(rmp) != 1) && rmp->priority >= MIN_PRIORITY && rmp->priority <= MAX_PRIORITY) { //if in userspace
 			total_wp += rmp->priority * rmp->run_count;
 			total_ts += rmp->time_slice;
 			total_cexec += rmp->cexec;
@@ -116,7 +116,7 @@ int updater()
 	//when low noumber of processes are in execution, priorityze compute intensiveness
 	up = rmp;
 	for (pnr = 0, rmp = schedproc; pnr < NR_PROCS; pnr++, rmp++) { //in array of system processes
-		if ((rmp->flags & IN_USE && rmp->is_sys_proc != 1) && rmp->priority >= MIN_PRIORITY && rmp->priority <= MAX_PRIORITY) { //if in userspace
+		if ((rmp->flags & IN_USE && is_system_proc(rmp) != 1) && rmp->priority >= MIN_PRIORITY && rmp->priority <= MAX_PRIORITY) { //if in userspace
 			rmp->cexec = rt_var*((rmp->time_slice/total_ts)*((rmp->priority * rmp->run_count)/total_wp))/ NR_PROCS; 
 			if(up->cexec > rmp->cexec){
 				up = rmp;
