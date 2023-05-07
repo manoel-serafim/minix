@@ -151,7 +151,7 @@ int do_noquantum(message *m_ptr)
 		rmp->priority += 1; /* lower priority */
 	}
 
-	if ((rv = schedule_process_local(rmp)) != OK) {
+	if ((rv = updater()) != OK) {
 		return rv;
 	}
 	return OK;
