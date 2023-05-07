@@ -31,7 +31,7 @@ EXTERN struct schedproc {
 	unsigned time_slice;		/* this process's time slice */
 	unsigned cpu;	/* what CPU is the process running on */
 	
-	unsigned cexec;  /*coefficient of execution */ 
+	double cexec;  /*coefficient of execution */ 
 	unsigned run_count; /*number of times runned*/
 	
 	bitchunk_t cpu_mask[BITMAP_CHUNKS(CONFIG_MAX_CPUS)]; /* what CPUs is the
