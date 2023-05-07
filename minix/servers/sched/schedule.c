@@ -125,7 +125,7 @@ int updater()
 	}
 	
 	up->run_count += 1;
-	schedule_process(up);
+	schedule_process_local(up);
 	return OK;
 
 
