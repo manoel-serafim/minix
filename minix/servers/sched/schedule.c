@@ -81,15 +81,52 @@ static void pick_cpu(struct schedproc * proc)
 #endif
 }
 /*===========================================================================*
- *		  		coeficient_updater			     *
+ *		  		coeficient_updater/sheduler			     *
  *===========================================================================*/
 int updater()
 {
 	struct schedproc *rmp;
+	struct shedproc *up;
+	int pnr;
 	
+	int total_wp; // total weighted priority = for pi,rci in processes : sum(pi*rci) 
+	unsigned total_ts; // total time_slice
 	
-
-
+	// a function with multiple hyperparameters should be defined to train a nn model in order to find the best ratio
+	int rt_var = 1;  //value bigger than 1 used to define the slope of execution (rate of variance) 
+	
+	//userspace
+	const int MIN_PRIORITY = 7;
+	const int MAX_PRIORITY = 15;
+	
+	//iterate to get values
+	for (pnr = 0, rmp = schedproc; pnr < NR_PROCS; pnr++, rmp++) { //in array of system processes
+		if ((rmp->flags & IN_USE && rmp->is_sys_proc != 1) && rmp->priority >= MIN_PRIORITY && rmp->priority <= MAX_PRIORITY) { //if in userspace
+			total_wp += rmp->priority * rmp->run_count;
+			total_ts += rmp->time_slice;
+			total_cexec += rmp->cexec;
+		}
+	}
+	
+	//cexec = (time_slice / total_time_slice) * ((priority * run_count) / total_weighted_priority) *rt_var * 1/NRPROCS
+	//prioritizes high compute requirements = highest cexec
+	//prioritizes fairness = lowest cexec
+	
+	//when high number of processes are in execution, priorityze fairness
+	//when low noumber of processes are in execution, priorityze compute intensiveness
+	up = rmp;
+	for (pnr = 0, rmp = schedproc; pnr < NR_PROCS; pnr++, rmp++) { //in array of system processes
+		if ((rmp->flags & IN_USE && rmp->is_sys_proc != 1) && rmp->priority >= MIN_PRIORITY && rmp->priority <= MAX_PRIORITY) { //if in userspace
+			rmp->cexec = rt_var*((rmp->time_slice/total_ts)*((rmp->priority * rmp->run_count)/total_wp))/ NR_PROCS; 
+			if(up->cexec > rmp->cexec){
+				up = rmp;
+			}	
+		}
+	}
+	
+	up->run_count += 1;
+	schedule_process(up);
+	return OK;
 
 
 }
